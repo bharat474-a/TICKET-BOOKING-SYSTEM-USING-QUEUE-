@@ -1,0 +1,368 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define CAPACITY 100
+
+typedef struct
+{
+    int receipt_id;
+    char p_name[50];
+} Patron;
+
+typedef struct
+{
+    Patron entries[CAPACITY];
+    int head, tail;
+} BookingQueue;
+
+void initialize(BookingQueue *q)
+{
+    q->head = q->tail = -1;
+}
+
+int is_empty(BookingQueue *q)
+{
+    return q->head == -1;
+}
+
+int is_full(BookingQueue *q)
+{
+    return q->tail == CAPACITY - 1;
+}
+
+void issue_ticket(BookingQueue *q, char p_name[], int receipt_id)
+{
+    if (is_full(q))
+    {
+        printf("\nQueue is at CAPACITY! No more issues allowed.\n");
+        return;
+    }
+
+    if (q->head == -1)
+        q->head = 0;
+
+    q->tail++;
+    q->entries[q->tail].receipt_id = receipt_id;
+    strcpy(q->entries[q->tail].p_name, p_name);
+
+    printf("\nTicket issued successfully! Receipt ID: %d\n", receipt_id);
+}
+
+void serve_patron(BookingQueue *q)
+{
+    if (is_empty(q))
+    {
+        printf("\nLine is clear! No patrons in the queue.\n");
+        return;
+    }
+
+    printf("\nPatron Served: %s (Receipt ID: %d)\n",
+           q->entries[q->head].p_name,
+           q->entries[q->head].receipt_id);
+
+    if (q->head == q->tail)
+    {
+        q->head = q->tail = -1;
+    }
+    else
+    {
+        q->head++;
+    }
+}
+
+void void_ticket(BookingQueue *q, int receipt_id_to_void)
+{
+    if (is_empty(q))
+    {
+        printf("\nQueue is empty! Nothing to void.\n");
+        return;
+    }
+
+    int i, found_index = -1;
+
+    for (i = q->head; i <= q->tail; i++)
+    {
+        if (q->entries[i].receipt_id == receipt_id_to_void)
+        {
+            found_index = i;
+            break;
+        }
+    }
+
+    if (found_index == -1)
+    {
+        printf("\nReceipt ID not found in the queue!\n");
+        return;
+    }
+
+    for (int j = found_index; j < q->tail; j++)
+    {
+        q->entries[j] = q->entries[j + 1];
+    }
+    q->tail--;
+
+    if (q->tail < q->head)
+        q->head = q->tail = -1;
+
+    printf("\nTicket %d voided successfully!\n", receipt_id_to_void);
+}
+
+void show_queue(BookingQueue *q)
+{
+    if (is_empty(q))
+    {
+        printf("\nQueue is Empty!\n");
+        return;
+    }
+
+    printf("\n--- Current Booking Manifest ---\n");
+    for (int i = q->head; i <= q->tail; i++)
+    {
+        printf("Receipt ID: %d | Name: %s\n",
+               q->entries[i].receipt_id,
+               q->entries[i].p_name);
+    }
+}
+
+int main()
+{
+    BookingQueue booking_line;
+    initialize(&booking_line);
+
+    int user_choice, current_id = 1;
+    char client_name[50];
+    int void_id;
+
+    while (1)
+    {
+        printf("\n====== Dynamic Booking Dispatch System (C Queue) ======\n");
+        printf("1. Issue New Ticket\n");
+        printf("2. Serve Next Patron\n");
+        printf("3. Void Specific Ticket\n");
+        printf("4. Display Queue Manifest\n");
+        printf("5. Terminate System\n");
+        printf("Enter action: ");
+        if (scanf("%d", &user_choice) != 1) {
+             while (getchar() != '\n');
+             user_choice = -1;
+        }
+
+        switch (user_choice)
+        {
+        case 1:
+            printf("Enter Patron Name: ");
+            scanf("%s", client_name);
+            issue_ticket(&booking_line, client_name, current_id++);
+            break;
+
+        case 2:
+            serve_patron(&booking_line);
+            break;
+
+        case 3:
+            printf("Enter Receipt ID to Void: ");
+            scanf("%d", &void_id);
+            void_ticket(&booking_line, void_id);
+            break;
+
+        case 4:
+            show_queue(&booking_line);
+            break;
+
+        case 5:
+            printf("\nSystem Shutdown. Goodbye!\n");
+            exit(0);
+
+        default:
+            printf("Invalid input! Please select a valid option.\n");
+        }
+    }
+
+    return 0;
+}
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define CAPACITY 100
+
+typedef struct
+{
+    int receipt_id;
+    char p_name[50];
+} Patron;
+
+typedef struct
+{
+    Patron entries[CAPACITY];
+    int head, tail;
+} BookingQueue;
+
+void initialize(BookingQueue *q)
+{
+    q->head = q->tail = -1;
+}
+
+int is_empty(BookingQueue *q)
+{
+    return q->head == -1;
+}
+
+int is_full(BookingQueue *q)
+{
+    return q->tail == CAPACITY - 1;
+}
+
+void issue_ticket(BookingQueue *q, char p_name[], int receipt_id)
+{
+    if (is_full(q))
+    {
+        printf("\nQueue is at CAPACITY! No more issues allowed.\n");
+        return;
+    }
+
+    if (q->head == -1)
+        q->head = 0;
+
+    q->tail++;
+    q->entries[q->tail].receipt_id = receipt_id;
+    strcpy(q->entries[q->tail].p_name, p_name);
+
+    printf("\nTicket issued successfully! Receipt ID: %d\n", receipt_id);
+}
+
+void serve_patron(BookingQueue *q)
+{
+    if (is_empty(q))
+    {
+        printf("\nLine is clear! No patrons in the queue.\n");
+        return;
+    }
+
+    printf("\nPatron Served: %s (Receipt ID: %d)\n",
+           q->entries[q->head].p_name,
+           q->entries[q->head].receipt_id);
+
+    if (q->head == q->tail)
+    {
+        q->head = q->tail = -1;
+    }
+    else
+    {
+        q->head++;
+    }
+}
+
+void void_ticket(BookingQueue *q, int receipt_id_to_void)
+{
+    if (is_empty(q))
+    {
+        printf("\nQueue is empty! Nothing to void.\n");
+        return;
+    }
+
+    int i, found_index = -1;
+
+    for (i = q->head; i <= q->tail; i++)
+    {
+        if (q->entries[i].receipt_id == receipt_id_to_void)
+        {
+            found_index = i;
+            break;
+        }
+    }
+
+    if (found_index == -1)
+    {
+        printf("\nReceipt ID not found in the queue!\n");
+        return;
+    }
+
+    for (int j = found_index; j < q->tail; j++)
+    {
+        q->entries[j] = q->entries[j + 1];
+    }
+    q->tail--;
+
+    if (q->tail < q->head)
+        q->head = q->tail = -1;
+
+    printf("\nTicket %d voided successfully!\n", receipt_id_to_void);
+}
+
+void show_queue(BookingQueue *q)
+{
+    if (is_empty(q))
+    {
+        printf("\nQueue is Empty!\n");
+        return;
+    }
+
+    printf("\n--- Current Booking Manifest ---\n");
+    for (int i = q->head; i <= q->tail; i++)
+    {
+        printf("Receipt ID: %d | Name: %s\n",
+               q->entries[i].receipt_id,
+               q->entries[i].p_name);
+    }
+}
+
+int main()
+{
+    BookingQueue booking_line;
+    initialize(&booking_line);
+
+    int user_choice, current_id = 1;
+    char client_name[50];
+    int void_id;
+
+    while (1)
+    {
+        printf("\n====== Dynamic Booking Dispatch System (C Queue) ======\n");
+        printf("1. Issue New Ticket\n");
+        printf("2. Serve Next Patron\n");
+        printf("3. Void Specific Ticket\n");
+        printf("4. Display Queue Manifest\n");
+        printf("5. Terminate System\n");
+        printf("Enter action: ");
+        if (scanf("%d", &user_choice) != 1) {
+             while (getchar() != '\n');
+             user_choice = -1;
+        }
+
+        switch (user_choice)
+        {
+        case 1:
+            printf("Enter Patron Name: ");
+            scanf("%s", client_name);
+            issue_ticket(&booking_line, client_name, current_id++);
+            break;
+
+        case 2:
+            serve_patron(&booking_line);
+            break;
+
+        case 3:
+            printf("Enter Receipt ID to Void: ");
+            scanf("%d", &void_id);
+            void_ticket(&booking_line, void_id);
+            break;
+
+        case 4:
+            show_queue(&booking_line);
+            break;
+
+        case 5:
+            printf("\nSystem Shutdown. Goodbye!\n");
+            exit(0);
+
+        default:
+            printf("Invalid input! Please select a valid option.\n");
+        }
+    }
+
+    return 0;
+}
+
