@@ -86,5 +86,3 @@ When a ticket is voided, all subsequent patrons in the queue are shifted forward
 to maintain the sequential service order, which is an operation that makes this implementation
 
 distinct from a pure circular queue structure.
-
-
